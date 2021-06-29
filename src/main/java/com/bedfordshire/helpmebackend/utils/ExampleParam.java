@@ -12,5 +12,5 @@ public class ExampleParam {
     public static final String USER_NORMAL = "USER";
     public static final String USER_ADMIN = "ADMIN";
 
-    public static final String URL = "/login";
+    public static final String URL = "/users/login";
 }

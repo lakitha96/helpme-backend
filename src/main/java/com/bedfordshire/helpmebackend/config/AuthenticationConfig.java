@@ -89,7 +89,9 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(ExampleParam.URL).permitAll()
                 .antMatchers("/register").permitAll()
-                .antMatchers(HttpMethod.GET, "/hello").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN);
+                .antMatchers(HttpMethod.GET, "/hello").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
+                .antMatchers(HttpMethod.POST, "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
+                .antMatchers(HttpMethod.GET, "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN);
     }
 
     private PasswordEncoder getPasswordEncoder() {

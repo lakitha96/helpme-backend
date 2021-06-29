@@ -2,9 +2,11 @@ package com.bedfordshire.helpmebackend.service;
 
 import com.bedfordshire.helpmebackend.config.JwtAuthenticationConfig;
 import com.bedfordshire.helpmebackend.config.JwtGenerator;
+import com.bedfordshire.helpmebackend.exception.CustomBadRequestException;
 import com.bedfordshire.helpmebackend.jwt.JwtUserDetailService;
-import com.bedfordshire.helpmebackend.model.User;
+import com.bedfordshire.helpmebackend.model.UserModel;
 import com.bedfordshire.helpmebackend.repository.UserRepository;
+import com.bedfordshire.helpmebackend.resource.AuthTokenResponse;
 import com.bedfordshire.helpmebackend.resource.UserResource;
 import com.bedfordshire.helpmebackend.utils.ExampleParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +35,34 @@ public class UserDetailsService {
     @Autowired
     private JwtUserDetailService jwtUserDetailService;
 
-    public User userRegister(UserResource user) {
-        User newUser = new User();
-        newUser.setName(user.getUsername());
-        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-        newUser.setEmail(user.getEmail());
-        newUser.setRole(ExampleParam.USER_NORMAL);
-        newUser.setUuid(UUID.randomUUID().toString());
-        return userRepository.save(newUser);
+    public AuthTokenResponse userRegister(UserResource user) {
+        UserModel userModelByEmail = userRepository.findByEmail(user.getEmail());
+        if (userModelByEmail != null) {
+            throw new CustomBadRequestException("user email already exist.");
+        }
+        UserModel newUserModel = new UserModel();
+        newUserModel.setName(user.getUsername());
+        newUserModel.setPassword(bcryptEncoder.encode(user.getPassword()));
+        newUserModel.setEmail(user.getEmail());
+        newUserModel.setRole(ExampleParam.USER_NORMAL);
+        newUserModel.setUuid(UUID.randomUUID().toString());
+        newUserModel.setStatus(true);
+        UserModel savedUserModel = userRepository.save(newUserModel);
+
+        AuthTokenResponse authTokenResponse = new AuthTokenResponse();
+        authTokenResponse.setAccessToken(createAccessToken(getUserResource(savedUserModel)));
+        authTokenResponse.setRefreshToken(createRefreshToken(getUserResource(savedUserModel)));
+        return authTokenResponse;
+    }
+
+    private UserResource getUserResource(UserModel userModel) {
+        UserResource userResource = new UserResource();
+        userResource.setActive(userModel.isStatus());
+        userResource.setUuid(userModel.getUuid());
+        userResource.setEmail(userModel.getEmail());
+        userResource.setUsername(userModel.getName());
+        userResource.setRole(userModel.getRole());
+        return userResource;
     }
 
     private String createAccessToken(UserResource userResource) {

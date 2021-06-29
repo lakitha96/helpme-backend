@@ -1,6 +1,6 @@
 package com.bedfordshire.helpmebackend.jwt;
 
-import com.bedfordshire.helpmebackend.model.User;
+import com.bedfordshire.helpmebackend.model.UserModel;
 import com.bedfordshire.helpmebackend.repository.UserRepository;
 import com.bedfordshire.helpmebackend.resource.UserCustomDetail;
 import com.bedfordshire.helpmebackend.resource.UserResource;
@@ -18,19 +18,19 @@ public class JwtUserDetailService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    private UserResource getUserResource(User user) {
+    private UserResource getUserResource(UserModel userModel) {
         UserResource userResource = new UserResource();
-        userResource.setUsername(user.getName());
-        userResource.setPassword(user.getPassword());
-        userResource.setUuid(user.getUuid());
-        userResource.setEmail(user.getEmail());
-        userResource.setRole(user.getRole());
+        userResource.setUsername(userModel.getName());
+        userResource.setPassword(userModel.getPassword());
+        userResource.setUuid(userModel.getUuid());
+        userResource.setEmail(userModel.getEmail());
+        userResource.setRole(userModel.getRole());
         return userResource;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User byEmailAndActive = userRepository.findByEmail(email);
+        UserModel byEmailAndActive = userRepository.findByEmail(email);
         if (byEmailAndActive == null) {
             throw new UsernameNotFoundException("Email not found.");
         }

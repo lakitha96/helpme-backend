@@ -9,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "users")
-public class User {
+public class UserModel {
     @Id
     @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +22,18 @@ public class User {
     @JsonIgnore
     private String role;
     private String email;
-    private String status;
+    private boolean status;
 
-    public User() {
+    public UserModel() {
     }
 
-    public User(User user) {
-        this.setName(user.getName());
-        this.setEmail(user.getEmail());
-        this.setRole(user.getRole());
-        this.setPassword(user.getPassword());
-        this.setUuid(user.getUuid());
+    public UserModel(UserModel userModel) {
+        this.setName(userModel.getName());
+        this.setEmail(userModel.getEmail());
+        this.setRole(userModel.getRole());
+        this.setPassword(userModel.getPassword());
+        this.setUuid(userModel.getUuid());
+        this.setStatus(userModel.isStatus());
     }
 
     public String getName() {
@@ -91,11 +92,11 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public String getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 }

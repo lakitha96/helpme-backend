@@ -31,8 +31,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse rsp, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse rsp, FilterChain filterChain) throws ServletException, IOException {
 
         String token = req.getHeader(ExampleParam.AUTH_HEADER);
         if (token != null && token.startsWith(ExampleParam.JWT_PREFIX + " ")) {
@@ -49,10 +48,19 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
                             authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
+                String uuid = claims.get("ud").toString();
+                MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(req);
+                if (req.getHeader("user") == null) {
+                    mutableRequest.addHeader("user", uuid);
+                }
+                filterChain.doFilter(mutableRequest, rsp);
+                return;
             } catch (Exception ignore) {
                 SecurityContextHolder.clearContext();
+                filterChain.doFilter(req, rsp);
             }
+        } else {
+            filterChain.doFilter(req, rsp);
         }
-        filterChain.doFilter(req, rsp);
     }
 }

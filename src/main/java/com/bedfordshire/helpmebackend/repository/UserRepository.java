@@ -1,6 +1,6 @@
 package com.bedfordshire.helpmebackend.repository;
 
-import com.bedfordshire.helpmebackend.model.User;
+import com.bedfordshire.helpmebackend.model.UserModel;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,8 +8,10 @@ import org.springframework.stereotype.Repository;
  * @author Lakitha Prabudh on 5/11/20
  */
 @Repository
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface UserRepository extends CrudRepository<UserModel, Integer> {
 
-    User findByEmail(String email);
+    UserModel findByEmail(String email);
+
+    UserModel findByUuid(String uuid);
 
 }
