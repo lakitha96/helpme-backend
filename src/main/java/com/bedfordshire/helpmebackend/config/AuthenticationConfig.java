@@ -90,8 +90,9 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ExampleParam.URL).permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers(HttpMethod.GET, "/hello").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
-                .antMatchers(HttpMethod.POST, "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
-                .antMatchers(HttpMethod.GET, "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN);
+                .antMatchers("/helps/request").permitAll()
+                .antMatchers( "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
+                .antMatchers("/fund-requests/**").hasAnyRole(ExampleParam.USER_ORGANIZATION);
     }
 
     private PasswordEncoder getPasswordEncoder() {

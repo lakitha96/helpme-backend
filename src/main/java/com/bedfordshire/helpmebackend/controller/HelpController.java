@@ -29,4 +29,9 @@ public class HelpController extends ResponseHandler {
         helpRequestService.saveHelpRequest(userUuid, helpRequestResource);
         return ResponseEntity.status(201).build();
     }
+
+    @GetMapping("/request")
+    public ResponseEntity<?> getHelpRequestByStatus(@RequestParam String status) {
+        return successResponseDataRetrieve(helpRequestService.getAllHelpRequestByStatus(status));
+    }
 }

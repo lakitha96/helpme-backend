@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Lakitha Prabudh
@@ -42,5 +44,18 @@ public class HelpRequestService {
         helpRequestModel.setLocation(helpRequestResource.getLocation());
         helpRequestModel.setStatus("PENDING");
         helpRequestRepository.save(helpRequestModel);
+    }
+
+    public List<HelpRequestResource> getAllHelpRequestByStatus(String status) {
+        List<HelpRequestModel> helpRequestModelList = helpRequestRepository.findByStatus(status);
+        return helpRequestModelList.stream().map(helpRequestModel -> {
+            HelpRequestResource helpRequestResource = new HelpRequestResource();
+            helpRequestResource.setDescription(helpRequestModel.getDescription());
+            helpRequestResource.setStatus(helpRequestModel.getStatus());
+            helpRequestResource.setHelpTypeUuid(helpRequestModel.getHelpTypeModel().getUuid());
+            helpRequestResource.setLocation(helpRequestModel.getLocation());
+            helpRequestResource.setHelpRequestUuid(helpRequestModel.getUuid());
+            return helpRequestResource;
+        }).collect(Collectors.toList());
     }
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class HelpRequestResource {
     @JsonProperty(value = "help_type_uuid")
     private String helpTypeUuid;
+    @JsonProperty(value = "help_request_uuid")
+    private String helpRequestUuid;
     private String name;
     private String description;
     private String status;
@@ -57,10 +59,19 @@ public class HelpRequestResource {
         this.location = location;
     }
 
+    public String getHelpRequestUuid() {
+        return helpRequestUuid;
+    }
+
+    public void setHelpRequestUuid(String helpRequestUuid) {
+        this.helpRequestUuid = helpRequestUuid;
+    }
+
     @Override
     public String toString() {
         return "HelpRequestResource{" +
-                "helpTypeUuid=" + helpTypeUuid +
+                "helpTypeUuid='" + helpTypeUuid + '\'' +
+                ", helpRequestUuid='" + helpRequestUuid + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
