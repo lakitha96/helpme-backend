@@ -15,14 +15,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+              
     - name: Set up Java version
       uses: actions/setup-java@v1
       with:
         java-version: '8'
-
-    - name: Remove artifacts
-      uses: c-hive/gha-remove-artifacts@v1.2.0
       
     - name: Build with Maven
       run: mvn clean install -DskipTests
@@ -54,3 +51,13 @@ jobs:
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_21702d71b32448ed963541d7594662e1 }}
         package: '*.jar'
+    
+    - name: Delete Artifact
+      uses: GeekyEggo/delete-artifact@v1.0.0
+    - run: echo hello > world.txt
+
+    # delete-artifact
+    - uses: geekyeggo/delete-artifact@v1
+      with:
+       name: java-app
+
