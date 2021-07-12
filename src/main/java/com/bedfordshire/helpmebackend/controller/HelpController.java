@@ -7,6 +7,7 @@ import com.bedfordshire.helpmebackend.utils.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author Lakitha Prabudh
@@ -25,13 +26,20 @@ public class HelpController extends ResponseHandler {
     }
 
     @PostMapping("/request")
-    public ResponseEntity<?> saveHelpRequest(@RequestHeader("user") String userUuid,@RequestBody HelpRequestResource helpRequestResource) {
-        helpRequestService.saveHelpRequest(userUuid, helpRequestResource);
+    public ResponseEntity<?> saveHelpRequest(@RequestHeader("user") String userUuid,
+                                             @RequestBody HelpRequestResource helpRequestResource,
+                                             @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
+        helpRequestService.saveHelpRequest(userUuid, helpRequestResource, multipartFile);
         return ResponseEntity.status(201).build();
     }
 
     @GetMapping("/request")
     public ResponseEntity<?> getHelpRequestByStatus(@RequestParam String status) {
         return successResponseDataRetrieve(helpRequestService.getAllHelpRequestByStatus(status));
+    }
+
+    @GetMapping("/request/pending")
+    public ResponseEntity<?> getAllPendingHelpRequests() {
+        return successResponseDataRetrieve(helpRequestService.getAllPendingHelpRequests());
     }
 }

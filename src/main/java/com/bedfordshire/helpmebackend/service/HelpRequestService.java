@@ -1,14 +1,17 @@
 package com.bedfordshire.helpmebackend.service;
 
+import com.bedfordshire.helpmebackend.client.AwsStorageClient;
 import com.bedfordshire.helpmebackend.exception.CustomBadRequestException;
 import com.bedfordshire.helpmebackend.model.HelpRequestModel;
 import com.bedfordshire.helpmebackend.model.HelpTypeModel;
 import com.bedfordshire.helpmebackend.model.UserModel;
 import com.bedfordshire.helpmebackend.repository.HelpRequestRepository;
 import com.bedfordshire.helpmebackend.repository.UserRepository;
+import com.bedfordshire.helpmebackend.resource.HelpRequestDashboardResource;
 import com.bedfordshire.helpmebackend.resource.HelpRequestResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -27,23 +30,33 @@ public class HelpRequestService {
     private HelpRequestRepository helpRequestRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AwsStorageClient awsStorageClient;
 
-    public void saveHelpRequest(String userUuid, HelpRequestResource helpRequestResource) {
+    public void saveHelpRequest(String userUuid, HelpRequestResource helpRequestResource, MultipartFile multipartFile) {
         UserModel userModel = userRepository.findByUuid(userUuid);
         Optional<HelpTypeModel> helpTypeByUuid = helpTypeService.getHelpTypeByUuid(helpRequestResource.getHelpTypeUuid());
         if (!helpTypeByUuid.isPresent()) {
             throw new CustomBadRequestException("Invalid help type uuid");
         }
+        String requestUuid = UUID.randomUUID().toString();
         HelpRequestModel helpRequestModel = new HelpRequestModel();
         helpRequestModel.setHelpTypeModel(helpTypeByUuid.get());
         helpRequestModel.setDescription(helpRequestResource.getDescription());
         helpRequestModel.setUserModel(userModel);
         helpRequestModel.setName(helpRequestResource.getName());
-        helpRequestModel.setUuid(UUID.randomUUID().toString());
+        helpRequestModel.setUuid(requestUuid);
         helpRequestModel.setRequestedTime(new Date());
         helpRequestModel.setLocation(helpRequestResource.getLocation());
         helpRequestModel.setStatus("PENDING");
+        if (!multipartFile.isEmpty()) {
+            helpRequestModel.setImageUrl(uploadAffectedAreaImage(multipartFile, requestUuid));
+        }
         helpRequestRepository.save(helpRequestModel);
+    }
+
+    public String uploadAffectedAreaImage(MultipartFile multipartFile, String helpUuid) {
+        return awsStorageClient.uploadAsset("help-request", helpUuid, multipartFile);
     }
 
     public List<HelpRequestResource> getAllHelpRequestByStatus(String status) {
@@ -56,6 +69,29 @@ public class HelpRequestService {
             helpRequestResource.setLocation(helpRequestModel.getLocation());
             helpRequestResource.setHelpRequestUuid(helpRequestModel.getUuid());
             return helpRequestResource;
+        }).collect(Collectors.toList());
+    }
+
+    public List<HelpRequestDashboardResource> getAllPendingHelpRequests() {
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus("PENDING");
+        return pendingList.stream().map(requestModel -> {
+            HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
+            HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
+            userScreen.setUserUuid(requestModel.getUserModel().getUuid());
+            userScreen.setUserImage(requestModel.getUserModel().getImageUrl());
+            userScreen.setUserName(requestModel.getUserModel().getName());
+
+            dashboardResource.setUserScreen(userScreen);
+
+            HelpRequestDashboardResource.HelpRequestScreen helpRequestScreen = new HelpRequestDashboardResource.HelpRequestScreen();
+            helpRequestScreen.setAffectedAreaImageUrl(requestModel.getImageUrl());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setStatus(requestModel.getStatus());
+            helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+
+            dashboardResource.setHelpRequestScreen(helpRequestScreen);
+            return dashboardResource;
         }).collect(Collectors.toList());
     }
 }

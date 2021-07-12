@@ -54,4 +54,9 @@ public class FundRequestService {
         FundRequestModel savedFundRequestModel = fundRequestRepository.save(fundRequestModel);
         return savedFundRequestModel.getUuid();
     }
+
+    //todo
+    public void getNonExpiredFundRaisedList() {
+
+    }
 }
