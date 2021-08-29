@@ -1,6 +1,5 @@
 package com.bedfordshire.helpmebackend.resource;
 
-import com.bedfordshire.helpmebackend.model.HelpTypeModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -15,6 +14,10 @@ public class HelpRequestResource {
     private String description;
     private String status;
     private String location;
+    @JsonProperty("contact_number")
+    private String contactNumber;
+    private String loc_lat;
+    private String loc_lng;
 
     public HelpRequestResource() {
     }
@@ -51,6 +54,30 @@ public class HelpRequestResource {
         this.status = status;
     }
 
+    public String getHelpRequestUuid() {
+        return helpRequestUuid;
+    }
+
+    public void setHelpRequestUuid(String helpRequestUuid) {
+        this.helpRequestUuid = helpRequestUuid;
+    }
+
+    public String getLoc_lat() {
+        return loc_lat;
+    }
+
+    public void setLoc_lat(String loc_lat) {
+        this.loc_lat = loc_lat;
+    }
+
+    public String getLoc_lng() {
+        return loc_lng;
+    }
+
+    public void setLoc_lng(String loc_lng) {
+        this.loc_lng = loc_lng;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -59,12 +86,12 @@ public class HelpRequestResource {
         this.location = location;
     }
 
-    public String getHelpRequestUuid() {
-        return helpRequestUuid;
+    public String getContactNumber() {
+        return contactNumber;
     }
 
-    public void setHelpRequestUuid(String helpRequestUuid) {
-        this.helpRequestUuid = helpRequestUuid;
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
 
     @Override
@@ -76,6 +103,9 @@ public class HelpRequestResource {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", location='" + location + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
+                ", loc_lat='" + loc_lat + '\'' +
+                ", loc_lng='" + loc_lng + '\'' +
                 '}';
     }
 }

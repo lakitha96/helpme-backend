@@ -27,6 +27,7 @@ public class HelpRequestModel {
     private String imageUrl;
     private String lat;
     private String lng;
+    private String contactNumber;
 
     public HelpRequestModel() {
     }
@@ -127,6 +128,14 @@ public class HelpRequestModel {
         this.lng = lng;
     }
 
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
     @Override
     public String toString() {
         return "HelpRequestModel{" +
@@ -142,6 +151,7 @@ public class HelpRequestModel {
                 ", imageUrl='" + imageUrl + '\'' +
                 ", lat='" + lat + '\'' +
                 ", lng='" + lng + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
                 '}';
     }
 }

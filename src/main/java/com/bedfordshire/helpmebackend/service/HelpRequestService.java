@@ -47,9 +47,12 @@ public class HelpRequestService {
         helpRequestModel.setName(helpRequestResource.getName());
         helpRequestModel.setUuid(requestUuid);
         helpRequestModel.setRequestedTime(new Date());
+        helpRequestModel.setLat(helpRequestResource.getLoc_lat());
+        helpRequestModel.setLng(helpRequestResource.getLoc_lng());
         helpRequestModel.setLocation(helpRequestResource.getLocation());
         helpRequestModel.setStatus("PENDING");
-        if (!multipartFile.isEmpty()) {
+        helpRequestModel.setContactNumber(helpRequestResource.getContactNumber());
+        if (multipartFile != null && !multipartFile.isEmpty()) {
             helpRequestModel.setImageUrl(uploadAffectedAreaImage(multipartFile, requestUuid));
         }
         helpRequestRepository.save(helpRequestModel);
