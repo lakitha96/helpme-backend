@@ -92,6 +92,10 @@ public class HelpRequestService {
             helpRequestScreen.setDescription(requestModel.getDescription());
             helpRequestScreen.setStatus(requestModel.getStatus());
             helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+            helpRequestScreen.setLocLng(requestModel.getLng());
+            helpRequestScreen.setLocLat(requestModel.getLat());
+            helpRequestScreen.setName(requestModel.getName());
+            helpRequestScreen.setUuid(requestModel.getUuid());
 
             dashboardResource.setHelpRequestScreen(helpRequestScreen);
             return dashboardResource;

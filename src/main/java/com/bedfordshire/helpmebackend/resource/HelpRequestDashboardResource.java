@@ -48,6 +48,9 @@ public class HelpRequestDashboardResource {
         private String affectedAreaImageUrl;
         private String description;
         private String status;
+        private String locLng;
+        private String locLat;
+        private String name;
 
 
         public HelpRequestScreen() {
@@ -91,6 +94,30 @@ public class HelpRequestDashboardResource {
 
         public void setHelpType(String helpType) {
             this.helpType = helpType;
+        }
+
+        public String getLocLng() {
+            return locLng;
+        }
+
+        public void setLocLng(String locLng) {
+            this.locLng = locLng;
+        }
+
+        public String getLocLat() {
+            return locLat;
+        }
+
+        public void setLocLat(String locLat) {
+            this.locLat = locLat;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 
