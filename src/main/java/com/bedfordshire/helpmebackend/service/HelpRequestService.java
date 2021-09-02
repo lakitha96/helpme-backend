@@ -2,13 +2,16 @@ package com.bedfordshire.helpmebackend.service;
 
 import com.bedfordshire.helpmebackend.client.AwsStorageClient;
 import com.bedfordshire.helpmebackend.exception.CustomBadRequestException;
+import com.bedfordshire.helpmebackend.model.FundRequestModel;
 import com.bedfordshire.helpmebackend.model.HelpRequestModel;
 import com.bedfordshire.helpmebackend.model.HelpTypeModel;
 import com.bedfordshire.helpmebackend.model.UserModel;
+import com.bedfordshire.helpmebackend.repository.FundRequestRepository;
 import com.bedfordshire.helpmebackend.repository.HelpRequestRepository;
 import com.bedfordshire.helpmebackend.repository.UserRepository;
 import com.bedfordshire.helpmebackend.resource.HelpRequestDashboardResource;
 import com.bedfordshire.helpmebackend.resource.HelpRequestResource;
+import com.bedfordshire.helpmebackend.utils.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +33,8 @@ public class HelpRequestService {
     private HelpRequestRepository helpRequestRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FundRequestRepository fundRequestRepository;
     @Autowired
     private AwsStorageClient awsStorageClient;
 
@@ -76,7 +81,7 @@ public class HelpRequestService {
     }
 
     public List<HelpRequestDashboardResource> getAllPendingHelpRequests() {
-        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus("PENDING");
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_PENDING);
         return pendingList.stream().map(requestModel -> {
             HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
             HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
@@ -100,5 +105,97 @@ public class HelpRequestService {
             dashboardResource.setHelpRequestScreen(helpRequestScreen);
             return dashboardResource;
         }).collect(Collectors.toList());
+    }
+
+    public Object getAllOngoingHelpRequests() {
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
+        return pendingList.stream().map(requestModel -> {
+            HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
+            HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
+            userScreen.setUserUuid(requestModel.getUserModel().getUuid());
+            userScreen.setUserImage(requestModel.getUserModel().getImageUrl());
+            userScreen.setUserName(requestModel.getUserModel().getName());
+
+            dashboardResource.setUserScreen(userScreen);
+
+            HelpRequestDashboardResource.HelpRequestScreen helpRequestScreen = new HelpRequestDashboardResource.HelpRequestScreen();
+            helpRequestScreen.setAffectedAreaImageUrl(requestModel.getImageUrl());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setStatus(requestModel.getStatus());
+            helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+            helpRequestScreen.setLocLng(requestModel.getLng());
+            helpRequestScreen.setLocLat(requestModel.getLat());
+            helpRequestScreen.setName(requestModel.getName());
+            helpRequestScreen.setUuid(requestModel.getUuid());
+            dashboardResource.setHelpRequestScreen(helpRequestScreen);
+
+            Optional<FundRequestModel> fundRequestModelOptional = fundRequestRepository.findByHelpRequestModel(requestModel);
+            if (fundRequestModelOptional.isPresent()) {
+                HelpRequestDashboardResource.FundRequestScreen fundRequestScreen = new HelpRequestDashboardResource.FundRequestScreen();
+                fundRequestScreen.setStatus(helpRequestScreen.getStatus());
+                fundRequestScreen.setUuid(fundRequestModelOptional.get().getUuid());
+                fundRequestScreen.setEndDate(CommonUtil.getStringDateByDate(fundRequestModelOptional.get().getEndDate()));
+                fundRequestScreen.setMaxAmount(fundRequestModelOptional.get().getMaximumAmount());
+
+                //todo find total donations
+                dashboardResource.setFundRequestScreen(fundRequestScreen);
+
+                HelpRequestDashboardResource.OrganizationScreen organizationScreen = new HelpRequestDashboardResource.OrganizationScreen();
+                organizationScreen.setName(fundRequestModelOptional.get().getOrganizationModel().getName());
+                organizationScreen.setImageUrl(fundRequestModelOptional.get().getOrganizationModel().getImageUrl());
+                organizationScreen.setLocation(fundRequestModelOptional.get().getOrganizationModel().getLocation());
+                dashboardResource.setOrganizationScreen(organizationScreen);
+            }
+
+            return dashboardResource;
+        }).collect(Collectors.toList());
+    }
+
+    public Object getOngoingHelpRequestByUuid(String uuid) {
+        HelpRequestModel requestModel = helpRequestRepository.findByUuid(uuid);
+        if (requestModel == null) {
+            throw new CustomBadRequestException("Invalid help request id.");
+        }
+
+        HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
+        HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
+        userScreen.setUserUuid(requestModel.getUserModel().getUuid());
+        userScreen.setUserImage(requestModel.getUserModel().getImageUrl());
+        userScreen.setUserName(requestModel.getUserModel().getName());
+
+        dashboardResource.setUserScreen(userScreen);
+
+        HelpRequestDashboardResource.HelpRequestScreen helpRequestScreen = new HelpRequestDashboardResource.HelpRequestScreen();
+        helpRequestScreen.setAffectedAreaImageUrl(requestModel.getImageUrl());
+        helpRequestScreen.setDescription(requestModel.getDescription());
+        helpRequestScreen.setDescription(requestModel.getDescription());
+        helpRequestScreen.setStatus(requestModel.getStatus());
+        helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+        helpRequestScreen.setLocLng(requestModel.getLng());
+        helpRequestScreen.setLocLat(requestModel.getLat());
+        helpRequestScreen.setName(requestModel.getName());
+        helpRequestScreen.setUuid(requestModel.getUuid());
+        dashboardResource.setHelpRequestScreen(helpRequestScreen);
+
+        Optional<FundRequestModel> fundRequestModelOptional = fundRequestRepository.findByHelpRequestModel(requestModel);
+        if (fundRequestModelOptional.isPresent()) {
+            HelpRequestDashboardResource.FundRequestScreen fundRequestScreen = new HelpRequestDashboardResource.FundRequestScreen();
+            fundRequestScreen.setStatus(helpRequestScreen.getStatus());
+            fundRequestScreen.setUuid(fundRequestModelOptional.get().getUuid());
+            fundRequestScreen.setEndDate(CommonUtil.getStringDateByDate(fundRequestModelOptional.get().getEndDate()));
+            fundRequestScreen.setMaxAmount(fundRequestModelOptional.get().getMaximumAmount());
+
+            //todo find total donations
+            dashboardResource.setFundRequestScreen(fundRequestScreen);
+
+            HelpRequestDashboardResource.OrganizationScreen organizationScreen = new HelpRequestDashboardResource.OrganizationScreen();
+            organizationScreen.setName(fundRequestModelOptional.get().getOrganizationModel().getName());
+            organizationScreen.setImageUrl(fundRequestModelOptional.get().getOrganizationModel().getImageUrl());
+            organizationScreen.setLocation(fundRequestModelOptional.get().getOrganizationModel().getLocation());
+            dashboardResource.setOrganizationScreen(organizationScreen);
+
+        }
+        return dashboardResource;
     }
 }

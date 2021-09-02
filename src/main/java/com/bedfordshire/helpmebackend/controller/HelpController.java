@@ -42,4 +42,14 @@ public class HelpController extends ResponseHandler {
     public ResponseEntity<?> getAllPendingHelpRequests() {
         return successResponseDataRetrieve(helpRequestService.getAllPendingHelpRequests());
     }
+
+    @GetMapping("/request/ongoing")
+    public ResponseEntity<?> getAllOngoingHelpRequests() {
+        return successResponseDataRetrieve(helpRequestService.getAllOngoingHelpRequests());
+    }
+
+    @GetMapping("/request/ongoing/{uuid}")
+    public ResponseEntity<?> getOngoingHelpRequestByUuid(@PathVariable String uuid) {
+        return successResponseDataRetrieve(helpRequestService.getOngoingHelpRequestByUuid(uuid));
+    }
 }

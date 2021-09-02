@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 /**
  * @author Lakitha Prabudh
  */
@@ -17,7 +19,7 @@ public class FundRequestController extends ResponseHandler {
     private FundRequestService fundRequestService;
 
     @PostMapping("/raise")
-    public ResponseEntity<?> raiseFundRequest(@RequestHeader("user") String uuid, @RequestBody FundRequestResource fundRequestResource) {
+    public ResponseEntity<?> raiseFundRequest(@RequestHeader("user") String uuid, @RequestBody FundRequestResource fundRequestResource) throws ParseException {
         return successResponseDataRetrieve(fundRequestService.raiseFundRequest(uuid, fundRequestResource));
     }
 }

@@ -15,6 +15,7 @@ public class OrganizationModel {
     private String location;
     private String status;
     private double maximumFundRequestAmount;
+    private String imageUrl;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organization_owner_id", referencedColumnName = "id")
     private UserModel userModel;
@@ -68,6 +69,14 @@ public class OrganizationModel {
 
     public void setMaximumFundRequestAmount(double maximumAmount) {
         this.maximumFundRequestAmount = maximumAmount;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     @Override

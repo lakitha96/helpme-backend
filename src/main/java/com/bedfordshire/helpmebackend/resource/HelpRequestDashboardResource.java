@@ -125,6 +125,7 @@ public class HelpRequestDashboardResource {
         private String uuid;
         private String name;
         private String imageUrl;
+        private String location;
 
         public OrganizationScreen() {
         }
@@ -152,13 +153,22 @@ public class HelpRequestDashboardResource {
         public void setImageUrl(String imageUrl) {
             this.imageUrl = imageUrl;
         }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
     }
 
     public static class FundRequestScreen {
         private String uuid;
         private String endDate;
         private String status;
-        private String fundRaisedAmount;
+        private double maxAmount;
+        private double fundRaisedAmount;
 
         public FundRequestScreen() {
         }
@@ -187,11 +197,19 @@ public class HelpRequestDashboardResource {
             this.status = status;
         }
 
-        public String getFundRaisedAmount() {
+        public double getFundRaisedAmount() {
             return fundRaisedAmount;
         }
 
-        public void setFundRaisedAmount(String fundRaisedAmount) {
+        public double getMaxAmount() {
+            return maxAmount;
+        }
+
+        public void setMaxAmount(double maxAmount) {
+            this.maxAmount = maxAmount;
+        }
+
+        public void setFundRaisedAmount(double fundRaisedAmount) {
             this.fundRaisedAmount = fundRaisedAmount;
         }
     }

@@ -11,15 +11,15 @@ import com.bedfordshire.helpmebackend.repository.OrganizationRepository;
 import com.bedfordshire.helpmebackend.repository.UserRepository;
 import com.bedfordshire.helpmebackend.resource.FundRequestResource;
 import com.bedfordshire.helpmebackend.resource.HelpRequestDashboardResource;
+import com.bedfordshire.helpmebackend.utils.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * @author Lakitha Prabudh
@@ -35,7 +35,7 @@ public class FundRequestService {
     @Autowired
     private HelpRequestRepository helpRequestRepository;
 
-    public String raiseFundRequest(String userUuid, FundRequestResource fundRequestResource) {
+    public String raiseFundRequest(String userUuid, FundRequestResource fundRequestResource) throws ParseException {
         UserModel byUuid = userRepository.findByUuid(userUuid);
         Optional<OrganizationModel> organizationModelOptional = organizationRepository.findByUserModel(byUuid);
         if (!organizationModelOptional.isPresent()) {
@@ -48,14 +48,22 @@ public class FundRequestService {
         }
 
         FundRequestModel fundRequestModel = new FundRequestModel();
+        Optional<FundRequestModel> fundRequestModelOptional = fundRequestRepository.findByHelpRequestModel(helpRequestModelByUuid);
+        if (fundRequestModelOptional.isPresent()) {
+            fundRequestModel = fundRequestModelOptional.get();
+        }
+
         fundRequestModel.setHelpRequestModel(helpRequestModelByUuid);
-        fundRequestModel.setCurrencyType("LKR");
+        fundRequestModel.setCurrencyType("USD");
         fundRequestModel.setMaximumAmount(organizationModelOptional.get().getMaximumFundRequestAmount());
         fundRequestModel.setStartDate(new Date());
-        fundRequestModel.setEndDate(new Date());
+        fundRequestModel.setEndDate(CommonUtil.getDateByString(fundRequestResource.getEndDate()));
         fundRequestModel.setOrganizationModel(organizationModelOptional.get());
         fundRequestModel.setUuid(UUID.randomUUID().toString());
         FundRequestModel savedFundRequestModel = fundRequestRepository.save(fundRequestModel);
+        //update help request status
+        helpRequestModelByUuid.setStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
+        helpRequestRepository.save(helpRequestModelByUuid);
         return savedFundRequestModel.getUuid();
     }
 
@@ -85,7 +93,7 @@ public class FundRequestService {
 
                 HelpRequestDashboardResource.FundRequestScreen fundRequestScreen = new HelpRequestDashboardResource.FundRequestScreen();
                 //todo collect data from fund request history
-                fundRequestScreen.setFundRaisedAmount("0 USD");
+                fundRequestScreen.setFundRaisedAmount(0);
                 fundRequestScreen.setUuid(fundRequestModel.getUuid());
                 fundRequestScreen.setStatus(helpRequestModel.getStatus());
                 //todo change data model
