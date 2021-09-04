@@ -1,25 +1,23 @@
 package com.bedfordshire.helpmebackend.service;
 
 import com.bedfordshire.helpmebackend.exception.CustomBadRequestException;
-import com.bedfordshire.helpmebackend.model.FundRequestModel;
-import com.bedfordshire.helpmebackend.model.HelpRequestModel;
-import com.bedfordshire.helpmebackend.model.OrganizationModel;
-import com.bedfordshire.helpmebackend.model.UserModel;
-import com.bedfordshire.helpmebackend.repository.FundRequestRepository;
-import com.bedfordshire.helpmebackend.repository.HelpRequestRepository;
-import com.bedfordshire.helpmebackend.repository.OrganizationRepository;
-import com.bedfordshire.helpmebackend.repository.UserRepository;
+import com.bedfordshire.helpmebackend.model.*;
+import com.bedfordshire.helpmebackend.repository.*;
+import com.bedfordshire.helpmebackend.resource.DonationHistoryResource;
+import com.bedfordshire.helpmebackend.resource.FundRaiseRequestResource;
 import com.bedfordshire.helpmebackend.resource.FundRequestResource;
 import com.bedfordshire.helpmebackend.resource.HelpRequestDashboardResource;
 import com.bedfordshire.helpmebackend.utils.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * @author Lakitha Prabudh
@@ -34,6 +32,8 @@ public class FundRequestService {
     private FundRequestRepository fundRequestRepository;
     @Autowired
     private HelpRequestRepository helpRequestRepository;
+    @Autowired
+    private FundRaiseRepository fundRaiseRepository;
 
     public String raiseFundRequest(String userUuid, FundRequestResource fundRequestResource) throws ParseException {
         UserModel byUuid = userRepository.findByUuid(userUuid);
@@ -65,6 +65,47 @@ public class FundRequestService {
         helpRequestModelByUuid.setStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
         helpRequestRepository.save(helpRequestModelByUuid);
         return savedFundRequestModel.getUuid();
+    }
+
+    public Stream<DonationHistoryResource> getDonationHistory(String userUuid) {
+        UserModel donorModel = userRepository.findByUuid(userUuid);
+        List<FundRaiseModel> donationList = fundRaiseRepository.findAllByDonorModel(donorModel);
+        return donationList.stream().map(fundRaiseModel -> {
+            DonationHistoryResource resource = new DonationHistoryResource();
+            resource.setHelpRequestUuid(fundRaiseModel.getFundRequestModel().getHelpRequestModel().getUuid());
+            resource.setHelpRequestStatus(fundRaiseModel.getFundRequestModel().getHelpRequestModel().getStatus());
+            resource.setAmount(new DecimalFormat("#.##").format(fundRaiseModel.getAmount()));
+            resource.setTime(CommonUtil.getStringDateByDate(fundRaiseModel.getTime()));
+            resource.setTransactionStatus(fundRaiseModel.getStatus());
+            resource.setPaymentName(fundRaiseModel.getPayerName());
+            resource.setTransactionId(fundRaiseModel.getTransactionId());
+            return resource;
+        });
+
+    }
+
+    public void saveDonationDetail(String userUuid, FundRaiseRequestResource resource) {
+        UserModel donorModel = userRepository.findByUuid(userUuid);
+        Optional<FundRequestModel> fundRequestModelOptional = fundRequestRepository.findByUuid(resource.getFundRequestUuid());
+        if (fundRequestModelOptional.isPresent()) {
+            FundRaiseModel fundRaiseModel = new FundRaiseModel();
+            fundRaiseModel.setDonorModel(donorModel);
+            fundRaiseModel.setFundRequestModel(fundRequestModelOptional.get());
+            fundRaiseModel.setPayerAddress(resource.getPayerAddress());
+            fundRaiseModel.setPayerEmail(resource.getPayerEmail());
+            fundRaiseModel.setPayerId(resource.getPayerId());
+            fundRaiseModel.setPayerName(resource.getPayerName());
+            fundRaiseModel.setTransactionId(resource.getTransactionId());
+            fundRaiseModel.setStatus(resource.getStatus());
+            fundRaiseModel.setTime(new Date());
+            fundRaiseModel.setAmount(resource.getAmount());
+            fundRaiseRepository.save(fundRaiseModel);
+        }
+    }
+
+    public double getTotalAmountForFundRaise(FundRequestModel fundRequestModel) {
+        List<FundRaiseModel> fundRaiseModels = fundRaiseRepository.findAllByFundRequestModel(fundRequestModel);
+        return fundRaiseModels.stream().mapToDouble(FundRaiseModel::getAmount).sum();
     }
 
     //todo return

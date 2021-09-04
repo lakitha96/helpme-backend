@@ -37,6 +37,8 @@ public class HelpRequestService {
     private FundRequestRepository fundRequestRepository;
     @Autowired
     private AwsStorageClient awsStorageClient;
+    @Autowired
+    private FundRequestService fundRequestService;
 
     public void saveHelpRequest(String userUuid, HelpRequestResource helpRequestResource, MultipartFile multipartFile) {
         UserModel userModel = userRepository.findByUuid(userUuid);
@@ -185,8 +187,8 @@ public class HelpRequestService {
             fundRequestScreen.setUuid(fundRequestModelOptional.get().getUuid());
             fundRequestScreen.setEndDate(CommonUtil.getStringDateByDate(fundRequestModelOptional.get().getEndDate()));
             fundRequestScreen.setMaxAmount(fundRequestModelOptional.get().getMaximumAmount());
+            fundRequestScreen.setFundRaisedAmount(fundRequestService.getTotalAmountForFundRaise(fundRequestModelOptional.get()));
 
-            //todo find total donations
             dashboardResource.setFundRequestScreen(fundRequestScreen);
 
             HelpRequestDashboardResource.OrganizationScreen organizationScreen = new HelpRequestDashboardResource.OrganizationScreen();

@@ -11,4 +11,5 @@ import java.util.Optional;
  */
 public interface FundRequestRepository extends JpaRepository<FundRequestModel, Integer> {
     Optional<FundRequestModel> findByHelpRequestModel(HelpRequestModel helpRequestModel);
+    Optional<FundRequestModel> findByUuid(String uuid);
 }

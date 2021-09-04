@@ -1,5 +1,6 @@
 package com.bedfordshire.helpmebackend.controller;
 
+import com.bedfordshire.helpmebackend.resource.FundRaiseRequestResource;
 import com.bedfordshire.helpmebackend.resource.FundRequestResource;
 import com.bedfordshire.helpmebackend.service.FundRequestService;
 import com.bedfordshire.helpmebackend.utils.ResponseHandler;
@@ -21,5 +22,16 @@ public class FundRequestController extends ResponseHandler {
     @PostMapping("/raise")
     public ResponseEntity<?> raiseFundRequest(@RequestHeader("user") String uuid, @RequestBody FundRequestResource fundRequestResource) throws ParseException {
         return successResponseDataRetrieve(fundRequestService.raiseFundRequest(uuid, fundRequestResource));
+    }
+
+    @PostMapping("/donation")
+    public ResponseEntity<?> raiseFundRequest(@RequestHeader("user") String uuid, @RequestBody FundRaiseRequestResource fundRaiseRequestResource) throws ParseException {
+        fundRequestService.saveDonationDetail(uuid, fundRaiseRequestResource);
+        return ResponseEntity.status(200).build();
+    }
+
+    @GetMapping("/donation/history")
+    public ResponseEntity<?> raiseFundRequest(@RequestHeader("user") String uuid) {
+        return successResponseDataRetrieve(fundRequestService.getDonationHistory(uuid));
     }
 }
