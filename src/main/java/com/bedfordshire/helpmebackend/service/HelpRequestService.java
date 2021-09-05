@@ -11,6 +11,7 @@ import com.bedfordshire.helpmebackend.repository.HelpRequestRepository;
 import com.bedfordshire.helpmebackend.repository.UserRepository;
 import com.bedfordshire.helpmebackend.resource.HelpRequestDashboardResource;
 import com.bedfordshire.helpmebackend.resource.HelpRequestResource;
+import com.bedfordshire.helpmebackend.resource.MapLocationResource;
 import com.bedfordshire.helpmebackend.utils.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Lakitha Prabudh
@@ -109,7 +111,20 @@ public class HelpRequestService {
         }).collect(Collectors.toList());
     }
 
-    public Object getAllOngoingHelpRequests() {
+    public List<MapLocationResource> getAllOngoingHelpRequestsMapLocations() {
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_PENDING);
+        List<HelpRequestModel> ongoingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
+        pendingList.addAll(ongoingList);
+
+        return pendingList.stream().map(model -> {
+            MapLocationResource mapLocationResource = new MapLocationResource();
+            mapLocationResource.setLat(model.getLat());
+            mapLocationResource.setLng(model.getLng());
+            return mapLocationResource;
+        }).collect(Collectors.toList());
+    }
+
+    public List<HelpRequestDashboardResource> getAllOngoingHelpRequests() {
         List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
         return pendingList.stream().map(requestModel -> {
             HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
@@ -139,8 +154,8 @@ public class HelpRequestService {
                 fundRequestScreen.setUuid(fundRequestModelOptional.get().getUuid());
                 fundRequestScreen.setEndDate(CommonUtil.getStringDateByDate(fundRequestModelOptional.get().getEndDate()));
                 fundRequestScreen.setMaxAmount(fundRequestModelOptional.get().getMaximumAmount());
+                fundRequestScreen.setFundRaisedAmount(fundRequestService.getTotalAmountForFundRaise(fundRequestModelOptional.get()));
 
-                //todo find total donations
                 dashboardResource.setFundRequestScreen(fundRequestScreen);
 
                 HelpRequestDashboardResource.OrganizationScreen organizationScreen = new HelpRequestDashboardResource.OrganizationScreen();
