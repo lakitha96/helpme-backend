@@ -57,7 +57,7 @@ public class FundRequestService {
         fundRequestModel.setCurrencyType("USD");
         fundRequestModel.setMaximumAmount(organizationModelOptional.get().getMaximumFundRequestAmount());
         fundRequestModel.setStartDate(new Date());
-        fundRequestModel.setEndDate(CommonUtil.getDateByString(fundRequestResource.getEndDate()));
+        fundRequestModel.setEndDate(CommonUtil.getDateByString2(fundRequestResource.getEndDate()));
         fundRequestModel.setOrganizationModel(organizationModelOptional.get());
         fundRequestModel.setUuid(UUID.randomUUID().toString());
         FundRequestModel savedFundRequestModel = fundRequestRepository.save(fundRequestModel);

@@ -15,7 +15,7 @@ public class FundRequestResource {
     @JsonProperty("help_request_uuid")
     private String helpRequestUuid;
     @JsonProperty("maximum_amount")
-    private int maximumAmount;
+    private double maximumAmount;
 
     public FundRequestResource() {
     }
@@ -52,11 +52,11 @@ public class FundRequestResource {
         this.helpRequestUuid = helpRequestUuid;
     }
 
-    public int getMaximumAmount() {
+    public double getMaximumAmount() {
         return maximumAmount;
     }
 
-    public void setMaximumAmount(int maximumAmount) {
+    public void setMaximumAmount(double maximumAmount) {
         this.maximumAmount = maximumAmount;
     }
 }

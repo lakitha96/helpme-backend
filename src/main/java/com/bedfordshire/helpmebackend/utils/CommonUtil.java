@@ -22,6 +22,11 @@ public class CommonUtil {
         return Date.from(formattedDate.atZone(ZoneId.of("Asia/Colombo")).toInstant());
     }
 
+    public static Date getDateByString2(String date) throws ParseException {
+        LocalDateTime formattedDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+        return Date.from(formattedDate.atZone(ZoneId.of("Asia/Colombo")).toInstant());
+    }
+
     public static String getStringDateByDate(Date date) {
 //        format.setTimeZone(TimeZone.getTimeZone("Asia/Colombo"));
         return format.format(date);
