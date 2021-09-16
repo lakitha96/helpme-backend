@@ -3,10 +3,7 @@ package com.bedfordshire.helpmebackend.service;
 import com.bedfordshire.helpmebackend.exception.CustomBadRequestException;
 import com.bedfordshire.helpmebackend.model.*;
 import com.bedfordshire.helpmebackend.repository.*;
-import com.bedfordshire.helpmebackend.resource.DonationHistoryResource;
-import com.bedfordshire.helpmebackend.resource.FundRaiseRequestResource;
-import com.bedfordshire.helpmebackend.resource.FundRequestResource;
-import com.bedfordshire.helpmebackend.resource.HelpRequestDashboardResource;
+import com.bedfordshire.helpmebackend.resource.*;
 import com.bedfordshire.helpmebackend.utils.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -65,6 +63,38 @@ public class FundRequestService {
         helpRequestModelByUuid.setStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
         helpRequestRepository.save(helpRequestModelByUuid);
         return savedFundRequestModel.getUuid();
+    }
+
+    public List getFundRequestHistory(String userUuid) {
+        UserModel organizerUser = userRepository.findByUuid(userUuid);
+        Optional<OrganizationModel> optionalOrganizationModel = organizationRepository.findByUserModel(organizerUser);
+        List<FundRequestModel> fundRequestModelList = fundRequestRepository.findByOrganizationModel(optionalOrganizationModel.get());
+        return fundRequestModelList.stream().map(fundRequestModel -> {
+            FundRequestHistoryResource historyResource = new FundRequestHistoryResource();
+            historyResource.setHelpRequestId(fundRequestModel.getHelpRequestModel().getUuid());
+            historyResource.setFundRequestId(fundRequestModel.getUuid());
+            historyResource.setContactNumber(fundRequestModel.getHelpRequestModel().getContactNumber());
+            historyResource.setHelpRequestUsername(fundRequestModel.getHelpRequestModel().getUserModel().getName());
+            historyResource.setExpireDate(CommonUtil.getStringDateByDate(fundRequestModel.getEndDate()));
+            historyResource.setTotalRaisedAmount(new DecimalFormat("#.##").format(getTotalAmountForFundRaise(fundRequestModel)));
+            historyResource.setStatus(fundRequestModel.getHelpRequestModel().getStatus());
+            historyResource.setHelpType(fundRequestModel.getHelpRequestModel().getHelpTypeModel().getName());
+            return historyResource;
+        }).collect(Collectors.toList());
+    }
+
+    public List getDonationHistoryForFundRequestId(String fundRequestUuid) {
+        Optional<FundRequestModel> byUuid = fundRequestRepository.findByUuid(fundRequestUuid);
+        List<FundRaiseModel> fundRequestModelList = fundRaiseRepository.findAllByFundRequestModel(byUuid.get());
+        return fundRequestModelList.stream().map(fundRaiseModel -> {
+            FundRaiseResource resource = new FundRaiseResource();
+            resource.setHelpRequestId(fundRaiseModel.getFundRequestModel().getHelpRequestModel().getUuid());
+            resource.setDonatedDate(CommonUtil.getStringDateByDate(fundRaiseModel.getTime()));
+            resource.setUsername(fundRaiseModel.getDonorModel().getName());
+            resource.setAmount(new DecimalFormat("#.##").format(fundRaiseModel.getAmount()));
+            resource.setStatus(fundRaiseModel.getStatus());
+            return resource;
+        }).collect(Collectors.toList());
     }
 
     public Stream<DonationHistoryResource> getDonationHistory(String userUuid) {

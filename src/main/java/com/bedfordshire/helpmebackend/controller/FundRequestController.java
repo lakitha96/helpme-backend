@@ -34,4 +34,14 @@ public class FundRequestController extends ResponseHandler {
     public ResponseEntity<?> raiseFundRequest(@RequestHeader("user") String uuid) {
         return successResponseDataRetrieve(fundRequestService.getDonationHistory(uuid));
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getFundRequestHistory(@RequestHeader("user") String uuid) {
+        return successResponseDataRetrieve(fundRequestService.getFundRequestHistory(uuid));
+    }
+
+    @GetMapping("/donations/history/{fund_request_uuid}")
+    public ResponseEntity<?> getDonationHistoryForFundRequestId(@PathVariable(name = "fund_request_uuid") String uuid) {
+        return successResponseDataRetrieve(fundRequestService.getDonationHistoryForFundRequestId(uuid));
+    }
 }
