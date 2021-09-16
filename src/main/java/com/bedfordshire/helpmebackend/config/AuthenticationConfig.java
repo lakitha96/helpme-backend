@@ -92,6 +92,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/hello").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
                 .antMatchers("/helps/request").permitAll()
                 .antMatchers( "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN, ExampleParam.USER_ORGANIZATION)
+                .antMatchers( "/admin/**").hasAnyRole(ExampleParam.USER_ADMIN)
                 .antMatchers("/fund-requests/donation/**").hasAnyRole(ExampleParam.USER_ORGANIZATION, ExampleParam.USER_NORMAL)
                 .antMatchers("/fund-requests/**").hasAnyRole(ExampleParam.USER_ORGANIZATION);
     }
