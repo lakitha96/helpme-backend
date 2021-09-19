@@ -4,6 +4,7 @@ package com.bedfordshire.helpmebackend.resource.admin;
  * @author Lakitha Prabudh
  */
 public class AdminOrganizationResource {
+    private String uuid;
     private String orgName;
     private String location;
     private String username;
@@ -42,5 +43,13 @@ public class AdminOrganizationResource {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }
