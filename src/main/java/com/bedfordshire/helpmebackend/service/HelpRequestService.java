@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -214,5 +211,144 @@ public class HelpRequestService {
 
         }
         return dashboardResource;
+    }
+
+    public List<HelpRequestDashboardResource> getAllPendingHelpRequests() {
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_PENDING);
+        return pendingList.stream().map(requestModel -> {
+            HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
+            HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
+            userScreen.setUserUuid(requestModel.getUserModel().getUuid());
+            userScreen.setUserImage(requestModel.getUserModel().getImageUrl());
+            userScreen.setUserName(requestModel.getUserModel().getName());
+
+            dashboardResource.setUserScreen(userScreen);
+
+            HelpRequestDashboardResource.HelpRequestScreen helpRequestScreen = new HelpRequestDashboardResource.HelpRequestScreen();
+            helpRequestScreen.setAffectedAreaImageUrl(requestModel.getImageUrl());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setStatus(requestModel.getStatus());
+            helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+            helpRequestScreen.setLocLng(requestModel.getLng());
+            helpRequestScreen.setLocLat(requestModel.getLat());
+            helpRequestScreen.setName(requestModel.getName());
+            helpRequestScreen.setUuid(requestModel.getUuid());
+
+            dashboardResource.setHelpRequestScreen(helpRequestScreen);
+            return dashboardResource;
+        }).collect(Collectors.toList());
+    }
+
+    public List<MapLocationResource> getAllOngoingHelpRequestsMapLocations() {
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_PENDING);
+        List<HelpRequestModel> ongoingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
+        pendingList.addAll(ongoingList);
+
+        return pendingList.stream().map(model -> {
+            MapLocationResource mapLocationResource = new MapLocationResource();
+            mapLocationResource.setLat(model.getLat());
+            mapLocationResource.setLng(model.getLng());
+            return mapLocationResource;
+        }).collect(Collectors.toList());
+    }
+
+    public List<HelpRequestDashboardResource> getAllOngoingHelpRequests() {
+        List<HelpRequestModel> pendingList = helpRequestRepository.findByStatus(CommonUtil.HELP_REQUEST_STATUS_ONGOING);
+        return pendingList.stream().map(requestModel -> {
+            HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
+            HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
+            userScreen.setUserUuid(requestModel.getUserModel().getUuid());
+            userScreen.setUserImage(requestModel.getUserModel().getImageUrl());
+            userScreen.setUserName(requestModel.getUserModel().getName());
+
+            dashboardResource.setUserScreen(userScreen);
+
+            HelpRequestDashboardResource.HelpRequestScreen helpRequestScreen = new HelpRequestDashboardResource.HelpRequestScreen();
+            helpRequestScreen.setAffectedAreaImageUrl(requestModel.getImageUrl());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setDescription(requestModel.getDescription());
+            helpRequestScreen.setStatus(requestModel.getStatus());
+            helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+            helpRequestScreen.setLocLng(requestModel.getLng());
+            helpRequestScreen.setLocLat(requestModel.getLat());
+            helpRequestScreen.setName(requestModel.getName());
+            helpRequestScreen.setUuid(requestModel.getUuid());
+            dashboardResource.setHelpRequestScreen(helpRequestScreen);
+
+            Optional<FundRequestModel> fundRequestModelOptional = fundRequestRepository.findByHelpRequestModel(requestModel);
+            if (fundRequestModelOptional.isPresent()) {
+                HelpRequestDashboardResource.FundRequestScreen fundRequestScreen = new HelpRequestDashboardResource.FundRequestScreen();
+                fundRequestScreen.setStatus(helpRequestScreen.getStatus());
+                fundRequestScreen.setUuid(fundRequestModelOptional.get().getUuid());
+                fundRequestScreen.setEndDate(CommonUtil.getStringDateByDate(fundRequestModelOptional.get().getEndDate()));
+                fundRequestScreen.setMaxAmount(fundRequestModelOptional.get().getMaximumAmount());
+                fundRequestScreen.setFundRaisedAmount(fundRequestService.getTotalAmountForFundRaise(fundRequestModelOptional.get()));
+
+                dashboardResource.setFundRequestScreen(fundRequestScreen);
+
+                HelpRequestDashboardResource.OrganizationScreen organizationScreen = new HelpRequestDashboardResource.OrganizationScreen();
+                organizationScreen.setName(fundRequestModelOptional.get().getOrganizationModel().getName());
+                organizationScreen.setImageUrl(fundRequestModelOptional.get().getOrganizationModel().getImageUrl());
+                organizationScreen.setLocation(fundRequestModelOptional.get().getOrganizationModel().getLocation());
+                dashboardResource.setOrganizationScreen(organizationScreen);
+            }
+
+            return dashboardResource;
+        }).collect(Collectors.toList());
+    }
+
+    public Object getOngoingHelpRequestByUuid(String uuid) {
+        HelpRequestModel requestModel = helpRequestRepository.findByUuid(uuid);
+        if (requestModel == null) {
+            throw new CustomBadRequestException("Invalid help request id.");
+        }
+
+        HelpRequestDashboardResource dashboardResource = new HelpRequestDashboardResource();
+        HelpRequestDashboardResource.UserScreen userScreen = new HelpRequestDashboardResource.UserScreen();
+        userScreen.setUserUuid(requestModel.getUserModel().getUuid());
+        userScreen.setUserImage(requestModel.getUserModel().getImageUrl());
+        userScreen.setUserName(requestModel.getUserModel().getName());
+
+        dashboardResource.setUserScreen(userScreen);
+
+        HelpRequestDashboardResource.HelpRequestScreen helpRequestScreen = new HelpRequestDashboardResource.HelpRequestScreen();
+        helpRequestScreen.setAffectedAreaImageUrl(requestModel.getImageUrl());
+        helpRequestScreen.setDescription(requestModel.getDescription());
+        helpRequestScreen.setDescription(requestModel.getDescription());
+        helpRequestScreen.setStatus(requestModel.getStatus());
+        helpRequestScreen.setHelpType(requestModel.getHelpTypeModel().getName());
+        helpRequestScreen.setLocLng(requestModel.getLng());
+        helpRequestScreen.setLocLat(requestModel.getLat());
+        helpRequestScreen.setName(requestModel.getName());
+        helpRequestScreen.setUuid(requestModel.getUuid());
+        dashboardResource.setHelpRequestScreen(helpRequestScreen);
+
+        Optional<FundRequestModel> fundRequestModelOptional = fundRequestRepository.findByHelpRequestModel(requestModel);
+        if (fundRequestModelOptional.isPresent()) {
+            HelpRequestDashboardResource.FundRequestScreen fundRequestScreen = new HelpRequestDashboardResource.FundRequestScreen();
+            fundRequestScreen.setStatus(helpRequestScreen.getStatus());
+            fundRequestScreen.setUuid(fundRequestModelOptional.get().getUuid());
+            fundRequestScreen.setEndDate(CommonUtil.getStringDateByDate(fundRequestModelOptional.get().getEndDate()));
+            fundRequestScreen.setMaxAmount(fundRequestModelOptional.get().getMaximumAmount());
+            fundRequestScreen.setFundRaisedAmount(fundRequestService.getTotalAmountForFundRaise(fundRequestModelOptional.get()));
+
+            dashboardResource.setFundRequestScreen(fundRequestScreen);
+
+            HelpRequestDashboardResource.OrganizationScreen organizationScreen = new HelpRequestDashboardResource.OrganizationScreen();
+            organizationScreen.setName(fundRequestModelOptional.get().getOrganizationModel().getName());
+            organizationScreen.setImageUrl(fundRequestModelOptional.get().getOrganizationModel().getImageUrl());
+            organizationScreen.setLocation(fundRequestModelOptional.get().getOrganizationModel().getLocation());
+            dashboardResource.setOrganizationScreen(organizationScreen);
+
+        }
+        return dashboardResource;
+    }
+
+    public List<HelpRequestDashboardResource> getAllHelpRequests() {
+        List<HelpRequestDashboardResource> allHelpRequests = new ArrayList();
+        allHelpRequests.addAll(getAllPendingHelpRequests());
+        allHelpRequests.addAll(getAllOngoingHelpRequests());
+        return allHelpRequests;
     }
 }
