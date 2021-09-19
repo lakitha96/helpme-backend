@@ -69,7 +69,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .cors().configurationSource(request -> {
             CorsConfiguration cors = new CorsConfiguration();
-            cors.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+            cors.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://api-disaster-relief.azurewebsites.net"));
             cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(Arrays.asList("*"));
             return cors;
