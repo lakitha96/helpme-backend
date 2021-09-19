@@ -68,14 +68,16 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .anonymous()
                 .and()
                 .cors().configurationSource(request -> {
-            CorsConfiguration cors = new CorsConfiguration();
-            cors.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://api-disaster-relief.azurewebsites.net"));
-            cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            cors.setAllowedHeaders(Arrays.asList("*"));
-            return cors;
-        }).and()
+                    CorsConfiguration cors = new CorsConfiguration();
+                    cors.setAllowedOrigins(Arrays.asList("http://localhost:4200",
+                            "https://api-disaster-relief.azurewebsites.net",
+                            "https://helpme-disaster-relief.azurewebsites.net/"));
+                    cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cors.setAllowedHeaders(Arrays.asList("*"));
+                    return cors;
+                }).and()
                 .exceptionHandling().authenticationEntryPoint(
-                (req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                        (req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 // all other requests need to be authenticated
                 .addFilterBefore(new JwtUsernamePasswordAuthenticationFilter(jwtAuthenticationConfig, authenticationManager()),
@@ -86,8 +88,8 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register").permitAll()
                 .antMatchers(HttpMethod.GET, "/hello").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN)
                 .antMatchers("/helps/request").permitAll()
-                .antMatchers( "/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN, ExampleParam.USER_ORGANIZATION)
-                .antMatchers( "/admin/**").hasAnyRole(ExampleParam.USER_ADMIN)
+                .antMatchers("/helps/**").hasAnyRole(ExampleParam.USER_NORMAL, ExampleParam.USER_ADMIN, ExampleParam.USER_ORGANIZATION)
+                .antMatchers("/admin/**").hasAnyRole(ExampleParam.USER_ADMIN)
                 .antMatchers("/fund-requests/donation/**").hasAnyRole(ExampleParam.USER_ORGANIZATION, ExampleParam.USER_NORMAL)
                 .antMatchers("/fund-requests/**").hasAnyRole(ExampleParam.USER_ORGANIZATION);
     }
