@@ -71,7 +71,7 @@ public class RegistrationService {
         newUserModel.setName(userResource.getUsername());
         newUserModel.setPassword(bcryptEncoder.encode(userResource.getPassword()));
         newUserModel.setEmail(userResource.getEmail());
-        newUserModel.setRole(ExampleParam.USER_ORGANIZATION);
+        newUserModel.setRole(ExampleParam.USER_PENDING_ORGANIZATION);
         newUserModel.setUuid(UUID.randomUUID().toString());
         newUserModel.setStatus(true);
 

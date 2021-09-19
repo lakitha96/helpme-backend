@@ -24,6 +24,10 @@ public class HelpRequestModel {
     private String status;
     private Date requestedTime;
     private String location;
+    private String imageUrl;
+    private String lat;
+    private String lng;
+    private String contactNumber;
 
     public HelpRequestModel() {
     }
@@ -100,17 +104,54 @@ public class HelpRequestModel {
         this.location = location;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getLat() {
+        return lat;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public String getLng() {
+        return lng;
+    }
+
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
     @Override
     public String toString() {
         return "HelpRequestModel{" +
                 "id=" + id +
+                ", userModel=" + userModel +
                 ", helpTypeModel=" + helpTypeModel +
                 ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                ", requestedTime='" + requestedTime + '\'' +
+                ", requestedTime=" + requestedTime +
                 ", location='" + location + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", lat='" + lat + '\'' +
+                ", lng='" + lng + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
                 '}';
     }
 }

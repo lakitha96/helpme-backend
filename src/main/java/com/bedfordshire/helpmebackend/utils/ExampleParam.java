@@ -11,6 +11,7 @@ public class ExampleParam {
     public static final String JWT_PREFIX = "Bearer";
     public static final String USER_NORMAL = "USER";
     public static final String USER_ORGANIZATION = "ORGANIZATION";
+    public static final String USER_PENDING_ORGANIZATION = "PENDING_ORGANIZATION";
     public static final String USER_ADMIN = "ADMIN";
 
     public static final String URL = "/users/login";
