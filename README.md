@@ -10,10 +10,10 @@ Before Run the Project, Build the project
 
 Configure Enviroment Varibles
 - will provide followings in sperate file
-- spring.datasource.url=${MYSQL_URL}
+```- spring.datasource.url=${MYSQL_URL}
 - spring.datasource.username=${MYSQL_USERNAME}
 - spring.datasource.password=${MYSQL_PASSWORD}
-- spring.jpa.hibernate.ddl-auto=${MYSQL_DD_AUTO}
+- spring.jpa.hibernate.ddl-auto=${MYSQL_DD_AUTO}```
 
 To Run the project 
 - If needed, run sql dump -> helpme_sql_dump.sql
