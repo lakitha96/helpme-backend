@@ -14,6 +14,7 @@ public class HelpTypeModel {
     private String uuid;
     private String name;
     private boolean valid;
+    private String imageUrl;
 
     public HelpTypeModel() {
     }
@@ -50,12 +51,22 @@ public class HelpTypeModel {
         this.valid = valid;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public String toString() {
         return "HelpTypeModel{" +
                 "id=" + id +
+                ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", valid=" + valid +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 }

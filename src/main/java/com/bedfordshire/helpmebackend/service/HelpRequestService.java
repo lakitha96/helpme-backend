@@ -58,6 +58,7 @@ public class HelpRequestService {
         helpRequestModel.setLocation(helpRequestResource.getLocation());
         helpRequestModel.setStatus("PENDING");
         helpRequestModel.setContactNumber(helpRequestResource.getContactNumber());
+        helpRequestModel.setImageUrl(helpTypeByUuid.get().getImageUrl());
 //        if (multipartFile != null && !multipartFile.isEmpty()) {
 //            helpRequestModel.setImageUrl(uploadAffectedAreaImage(multipartFile, requestUuid));
 //        }
