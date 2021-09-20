@@ -1,6 +1,6 @@
 package com.bedfordshire.helpmebackend.service;
 
-import com.bedfordshire.helpmebackend.client.AwsStorageClient;
+//import com.bedfordshire.helpmebackend.client.AwsStorageClient;
 import com.bedfordshire.helpmebackend.exception.CustomBadRequestException;
 import com.bedfordshire.helpmebackend.model.FundRequestModel;
 import com.bedfordshire.helpmebackend.model.HelpRequestModel;
@@ -34,8 +34,8 @@ public class HelpRequestService {
     private UserRepository userRepository;
     @Autowired
     private FundRequestRepository fundRequestRepository;
-    @Autowired
-    private AwsStorageClient awsStorageClient;
+//    @Autowired
+//    private AwsStorageClient awsStorageClient;
     @Autowired
     private FundRequestService fundRequestService;
 
@@ -58,15 +58,15 @@ public class HelpRequestService {
         helpRequestModel.setLocation(helpRequestResource.getLocation());
         helpRequestModel.setStatus("PENDING");
         helpRequestModel.setContactNumber(helpRequestResource.getContactNumber());
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            helpRequestModel.setImageUrl(uploadAffectedAreaImage(multipartFile, requestUuid));
-        }
+//        if (multipartFile != null && !multipartFile.isEmpty()) {
+//            helpRequestModel.setImageUrl(uploadAffectedAreaImage(multipartFile, requestUuid));
+//        }
         helpRequestRepository.save(helpRequestModel);
     }
 
-    public String uploadAffectedAreaImage(MultipartFile multipartFile, String helpUuid) {
-        return awsStorageClient.uploadAsset("help-request", helpUuid, multipartFile);
-    }
+//    public String uploadAffectedAreaImage(MultipartFile multipartFile, String helpUuid) {
+//        return awsStorageClient.uploadAsset("help-request", helpUuid, multipartFile);
+//    }
 
     public List<HelpRequestResource> getAllHelpRequestByStatus(String status) {
         List<HelpRequestModel> helpRequestModelList = helpRequestRepository.findByStatus(status);
