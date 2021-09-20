@@ -8,8 +8,7 @@ To download libraries and build the project, please use following command for ea
 Before Run the Project, Build the project
 - ``` mvn clean install -DskipTests ```
 
-Configure Enviroment Varibles
-- will provide followings in sperate file
+Configure following enviroment varibles
 - ``` spring.datasource.url=${MYSQL_URL} ```
 - ``` spring.datasource.username=${MYSQL_USERNAME} ```
 - ``` spring.datasource.password=${MYSQL_PASSWORD} ```
