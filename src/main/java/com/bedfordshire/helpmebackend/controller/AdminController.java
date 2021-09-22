@@ -61,7 +61,7 @@ public class AdminController extends ResponseHandler {
         return successResponseDataRetrieve(fundRequestService.getAllFundRequest());
     }
 
-    @GetMapping("/donations/history/{fund_request_uuid}")
+    @GetMapping("/donations/all/{fund_request_uuid}")
     public ResponseEntity<?> getDonationHistoryForFundRequestId(@PathVariable(name = "fund_request_uuid") String uuid) {
         return successResponseDataRetrieve(fundRequestService.getDonationHistoryForFundRequestId(uuid));
     }
